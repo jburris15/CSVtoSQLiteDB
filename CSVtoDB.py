@@ -3,8 +3,7 @@ from sqlite3 import Error
 import os
 from pathlib import Path
 
-def create_table(create_table_s):
-    database = r"C:\your\path\to\database.db" # change to your preferred db path + filename
+def create_table(create_table_s,database):
     db_exists = False
     if not db_exists:
         try:
@@ -23,8 +22,7 @@ def create_table(create_table_s):
     con.commit()
     con.close()
 
-def insertToDB(to_db,col_names,table_name):
-    database = r"C:\Users\lilbu\Projects\StarWars\StarWars.db"
+def insertToDB(to_db,col_names,table_name,database):
     try:
         con = sqlite3.connect(database) # change to 'sqlite:///StarWars.db"
     except Error as e:
@@ -39,6 +37,7 @@ def insertToDB(to_db,col_names,table_name):
 
 
 def readCSV(full_file):
+    database = r"C:\your\path\to\database.db" # change to your preferred db path + filename
     with open(full_file,'r') as fin: # `with` statement available in 2.5+
         # csv.DictReader uses first line in file for column headings by default
         dr = csv.DictReader(fin) # comma is default delimiter
@@ -54,11 +53,11 @@ def readCSV(full_file):
                 read_col_header = True
                 col_names = col_names.rstrip(',')
                 create_table_s = "CREATE TABLE IF NOT EXISTS {} ({})".format(table_name, col_names)
-                create_table(create_table_s)
+                create_table(create_table_s, database)
 
             if read_col_header:
                 to_db.append([(row[cn]) for cn in col_names.split(",")])
-        insertToDB(to_db,col_names,table_name)
+        insertToDB(to_db,col_names,table_name, database)
 
 path = os.getcwd() + "\\data"
 files = [x for x in os.listdir(path)]
